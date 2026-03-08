@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "dummy-key-for-build",
     authDomain: "zenithmind-ai.firebaseapp.com",
     projectId: "zenithmind-ai",
     storageBucket: "zenithmind-ai.firebasestorage.app",

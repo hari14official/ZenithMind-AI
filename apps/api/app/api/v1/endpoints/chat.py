@@ -17,9 +17,9 @@ def ask_question(request: ChatRequest):
     if not genai:
         return {"answer": "Gemini AI module is not installed on the server (google-generativeai module missing)."}
     
-    api_key = os.getenv("GEMINI_API_KEY", "AIzaSyB_wlF8QKuL7r2iMv6R3pIm4s7UpuuQQnY")
+    api_key = os.getenv('GOOGLE_API_KEY')
     if not api_key:
-        return {"answer": "I'm sorry, artificial intelligence answers are currently disabled because the server is missing the Google Gemini API Key. Please configure GEMINI_API_KEY to use real-time AI answers."}
+        return {"answer": "I'm sorry, artificial intelligence answers are currently disabled because the server is missing the Google Gemini API Key. Please configure GOOGLE_API_KEY to use real-time AI answers."}
         
     try:
         genai.configure(api_key=api_key)

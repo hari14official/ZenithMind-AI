@@ -18,4 +18,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Verify Docker Build
-        run: docker build -t zenith-test .
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }} \
+            -t zenith-test .

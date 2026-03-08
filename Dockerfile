@@ -2,6 +2,10 @@
 FROM node:20-alpine AS builder
 WORKDIR /app/apps/web
 
+# Support Firebase API Key during build (needed for Next.js static generation)
+ARG NEXT_PUBLIC_FIREBASE_API_KEY
+ENV NEXT_PUBLIC_FIREBASE_API_KEY=$NEXT_PUBLIC_FIREBASE_API_KEY
+
 # Copy package management files and install dependencies
 COPY apps/web/package.json apps/web/package-lock.json* ./
 RUN npm install

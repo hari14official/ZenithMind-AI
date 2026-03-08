@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 220 30% 98%;
+        /* Slightly cooler/brighter white */
+        --foreground: 222.2 84% 4.9%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+
+        /* Vibrant Indigo Primary */
+        --primary: 245 80% 60%;
+        --primary-foreground: 210 40% 98%;
+
+        /* Cool Slate Secondary */
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 245 80% 60%;
+
+        --radius: 1rem;
+        /* More rounded for modern feel */
+    }
+
+    .dark {
+        --background: 230 50% 3%;
+        /* Deep space black-blue */
+        --foreground: 210 40% 98%;
+
+        --card: 230 50% 5%;
+        --card-foreground: 210 40% 98%;
+
+        --popover: 230 50% 5%;
+        --popover-foreground: 210 40% 98%;
+
+        --primary: 260 90% 70%;
+        /* Cosmic Purple */
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 230 40% 12%;
+        --secondary-foreground: 210 40% 98%;
+
+        --muted: 230 40% 10%;
+        --muted-foreground: 215 20% 60%;
+
+        --accent: 260 80% 20%;
+        --accent-foreground: 210 40% 98%;
+
+        --destructive: 0 80% 40%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 230 40% 15%;
+        --input: 230 40% 15%;
+        --ring: 260 90% 70%;
+    }
+}
+
+@keyframes star-pulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.2);
+    }
+}
+
+.stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+    display: none;
+}
+
+.dark .stars-container {
+    display: block;
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: star-pulse 3s infinite ease-in-out;
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .glass {
+        @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+    }
+
+    .glass-card {
+        @apply bg-white/70 backdrop-blur-lg border border-white/50 shadow-sm;
+    }
+
+    /* Neo-Grade Utilities */
+    .mesh-bg {
+        background-color: #f3f4f6;
+        background-image:
+            radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+            radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+    }
+
+    .mesh-bg-light {
+        background-color: #e0e7ff;
+        background-image:
+            radial-gradient(at 0% 0%, hsla(253, 16%, 90%, 1) 0, transparent 50%),
+            radial-gradient(at 50% 100%, hsla(225, 39%, 90%, 1) 0, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(339, 49%, 90%, 1) 0, transparent 50%);
+    }
+
+    .neo-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .gradient-text {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-500;
+    }
+
+    .gradient-bg {
+        @apply bg-gradient-to-br from-indigo-50 to-white;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

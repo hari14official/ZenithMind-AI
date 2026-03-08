@@ -1,0 +1,3 @@
+sys.executable: C:\PROJECT\ZenithMind-AI\ZenithMind-AI-0.1.2\apps\api\venv\Scripts\python.exe
+sys.path: ['C:\\PROJECT\\ZenithMind-AI\\ZenithMind-AI-0.1.2\\apps\\api', 'C:\\Program Files\\Python311\\python311.zip', 'C:\\Program Files\\Python311\\DLLs', 'C:\\Program Files\\Python311\\Lib', 'C:\\Program Files\\Python311', 'C:\\PROJECT\\ZenithMind-AI\\ZenithMind-AI-0.1.2\\apps\\api\\venv', 'C:\\PROJECT\\ZenithMind-AI\\ZenithMind-AI-0.1.2\\apps\\api\\venv\\Lib\\site-packages']
+SUCCESS

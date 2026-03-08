@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Node/Next.js
+node_modules
+apps/web/node_modules
+.next
+apps/web/.next
+out
+apps/web/out
+npm-debug.log
+
+# Python/Venv
+.venv
+venv
+apps/api/venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Mac
+.DS_Store
+
+# Local App databases or sqlite
+*.db
+*.sqlite3
+
+# Env
+# Do not ignore .env.local because it contains the GEMINI_API_KEY
+# required during runtime for this specific deployment.
+# We will explicitly copy `.env.local` so we leave it un-ignored.

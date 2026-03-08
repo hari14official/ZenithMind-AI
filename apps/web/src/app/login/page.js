@@ -117,7 +117,7 @@ export default function LoginPage() {
                 <Card className="w-full max-w-md">
                     <CardHeader className="space-y-1">
                         <CardTitle className="text-2xl font-bold text-center">
-                            {isVerificationSent ? 'Check your email' : 'Welcome back'}
+                            {isVerificationSent ? 'Check your email' : 'Welcome back v1.1'}
                         </CardTitle>
                         {!isVerificationSent && (
                             <CardDescription className="text-center">

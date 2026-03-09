@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { API_BASE_URL } from '@/lib/api-config'
 
 export default function ForgotPasswordPage() {
     const router = useRouter()
@@ -45,7 +46,7 @@ export default function ForgotPasswordPage() {
         setMessage('')
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/auth/request-otp', {
+            const response = await fetch(`${API_BASE_URL}/api/v1/auth/request-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -80,7 +81,7 @@ export default function ForgotPasswordPage() {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/auth/verify-otp', {
+            const response = await fetch(`${API_BASE_URL}/api/v1/auth/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, code: enteredOtp })
@@ -121,7 +122,7 @@ export default function ForgotPasswordPage() {
         setError('')
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/auth/reset-password', {
+            const response = await fetch(`${API_BASE_URL}/api/v1/auth/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password, resetToken })

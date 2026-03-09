@@ -10,6 +10,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { auth } from '@/lib/firebase'
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, sendEmailVerification } from 'firebase/auth'
+import { API_BASE_URL } from '@/lib/api-config'
 
 export default function LoginPage() {
     const router = useRouter()
@@ -57,7 +58,7 @@ export default function LoginPage() {
             localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email }))
 
             // Send login alert
-            fetch('http://127.0.0.1:8000/api/v1/auth/login-alert', {
+            fetch(`${API_BASE_URL}/api/v1/auth/login-alert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: user.email, name: user.email.split('@')[0] })
@@ -94,7 +95,7 @@ export default function LoginPage() {
             localStorage.setItem('user', JSON.stringify({ id: user.uid, email: user.email, name: user.displayName }))
 
             // Send login alert
-            fetch('http://127.0.0.1:8000/api/v1/auth/login-alert', {
+            fetch(`${API_BASE_URL}/api/v1/auth/login-alert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: user.email, name: user.displayName || user.email.split('@')[0] })

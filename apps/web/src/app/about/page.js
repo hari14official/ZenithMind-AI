@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Footer } from '@/components/layout/Footer'
 import { useState } from 'react'
+import { API_BASE_URL } from '@/lib/api-config'
 
 const steps = [
     {
@@ -129,7 +130,7 @@ export default function AboutPage() {
         setCustomAnswer('')
 
         try {
-            const res = await fetch('http://localhost:8000/api/v1/chat/ask', {
+            const res = await fetch(`${API_BASE_URL}/api/v1/chat/ask`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: customQuestion }),

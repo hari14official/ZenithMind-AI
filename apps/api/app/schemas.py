@@ -16,7 +16,7 @@ class UserLogin(BaseModel):
     password: str
 
 class UserResponse(BaseModel):
-    id: int
+    id: str
     email: str
     name: str
     work_type: Optional[str]
@@ -32,7 +32,7 @@ class Token(BaseModel):
     user: UserResponse
 
 class GameSessionCreate(BaseModel):
-    user_id: int
+    user_id: str
     baseline_stress: Optional[float] = None
 
 class GameDataCreate(BaseModel):
@@ -76,5 +76,5 @@ class ResetPasswordRequest(BaseModel):
 
 class LoginAlertRequest(BaseModel):
     email: EmailStr
-    name: str
+    name: Optional[str] = None
 

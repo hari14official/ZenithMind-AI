@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from typing import List
-from datetime import datetime
+from datetime import datetime, timezone
 from app.core.database import get_db
 from app import models, schemas
 from app.services.inference_service import inference_service
@@ -18,10 +18,24 @@ def start_session(
     # Reset inference buffer for new session
     inference_service.reset_buffer()
     
+    # Ensure user exists in local database (since they might only exist in Firebase)
+    db_user = db.query(models.User).filter(models.User.id == session_data.user_id).first()
+    if not db_user:
+        # Create minimal user record to satisfy foreign key
+        db_user = models.User(
+            id=session_data.user_id,
+            email="firebase-user@zenithmind.ai", # Fallback, we don't have email here unless we add it to schema
+            name="Anonymous",
+            password_hash="firebase-only"
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+    
     session = models.GameSession(
         user_id=session_data.user_id,
         baseline_stress=session_data.baseline_stress,
-        started_at=datetime.utcnow()
+        started_at=datetime.now(timezone.utc)
     )
     db.add(session)
     db.commit()
@@ -67,7 +81,7 @@ def complete_session(session_id: int, db: Session = Depends(get_db)):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     
-    session.completed_at = datetime.utcnow()
+    session.completed_at = datetime.now(timezone.utc)
     db.commit()
     
     return {"message": "Session completed", "session_id": session_id}

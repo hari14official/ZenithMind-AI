@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import AnimatedIcon from '@/components/ui/AnimatedIcon'
+import { API_BASE_URL } from '@/lib/api-config'
 
 export default function DashboardPage() {
     const router = useRouter()
@@ -36,7 +37,7 @@ export default function DashboardPage() {
 
     const fetchSessions = async (userId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/stress/user/${userId}/history`)
+            const response = await fetch(`${API_BASE_URL}/api/v1/stress/user/${userId}/history`)
             if (response.ok) {
                 const data = await response.json()
                 // Only update if length changed to prevent unnecessary re-renders causing jitter, 

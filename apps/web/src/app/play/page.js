@@ -22,6 +22,8 @@ import BreathingExerciseGame from './games/BreathingExercise'
 // Import face tracking
 import FaceTracking from './FaceTracking'
 
+import { API_BASE_URL } from '@/lib/api-config'
+
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler)
 
 const ALL_GAMES = [
@@ -76,7 +78,7 @@ export default function PlayPage() {
             const games = selectRandomGames()
             setSelectedGames(games)
 
-            const response = await fetch('http://127.0.0.1:8000/api/v1/stress/session/start', {
+            const response = await fetch(`${API_BASE_URL}/api/v1/stress/session/start`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: user.id, baseline_stress: 50 })
@@ -105,7 +107,7 @@ export default function PlayPage() {
         try {
             const currentGame = selectedGames[currentGameIndex]
 
-            await fetch(`http://127.0.0.1:8000/api/v1/stress/session/${sessionId}/game`, {
+            await fetch(`${API_BASE_URL}/api/v1/stress/session/${sessionId}/game`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -146,7 +148,7 @@ export default function PlayPage() {
 
     const completeSession = async () => {
         try {
-            await fetch(`http://127.0.0.1:8000/api/v1/stress/session/${sessionId}/complete`, {
+            await fetch(`${API_BASE_URL}/api/v1/stress/session/${sessionId}/complete`, {
                 method: 'POST'
             })
             if (faceTrackingRef.current) faceTrackingRef.current.stopTracking()

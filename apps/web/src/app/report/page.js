@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import AnimatedIcon from '@/components/ui/AnimatedIcon'
+import { API_BASE_URL } from '@/lib/api-config'
 
 function ReportContent() {
     const router = useRouter()
@@ -29,7 +30,7 @@ function ReportContent() {
             if (userData) {
                 try {
                     const user = JSON.parse(userData)
-                    fetch(`http://127.0.0.1:8000/api/v1/stress/user/${user.id}/history`)
+                    fetch(`${API_BASE_URL}/api/v1/stress/user/${user.id}/history`)
                         .then(r => r.json())
                         .then(data => { setHistoryList(data); setHistoryLoading(false) })
                         .catch(() => setHistoryLoading(false))
@@ -46,7 +47,7 @@ function ReportContent() {
         try {
             // Fetch session data first
             const sessionResponse = await fetch(
-                `http://127.0.0.1:8000/api/v1/stress/session/${sessionId}`
+                `${API_BASE_URL}/api/v1/stress/session/${sessionId}`
             )
 
             if (sessionResponse.ok) {
@@ -56,14 +57,14 @@ function ReportContent() {
 
             // Generate report if not exists
             const generateResponse = await fetch(
-                `http://127.0.0.1:8000/api/v1/reports/generate/${sessionId}`,
+                `${API_BASE_URL}/api/v1/reports/generate/${sessionId}`,
                 { method: 'POST' }
             )
 
             if (!generateResponse.ok) {
                 // Try to fetch existing report
                 const fetchResponse = await fetch(
-                    `http://127.0.0.1:8000/api/v1/reports/session/${sessionId}/report`
+                    `${API_BASE_URL}/api/v1/reports/session/${sessionId}/report`
                 )
 
                 if (!fetchResponse.ok) {
@@ -87,7 +88,7 @@ function ReportContent() {
     const downloadPDF = async () => {
         try {
             const response = await fetch(
-                `http://127.0.0.1:8000/api/v1/reports/${report.id}/pdf`
+                `${API_BASE_URL}/api/v1/reports/${report.id}/pdf`
             )
             const blob = await response.blob()
             const url = window.URL.createObjectURL(blob)

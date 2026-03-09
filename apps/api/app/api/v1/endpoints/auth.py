@@ -136,7 +136,16 @@ async def request_otp(req: schemas.ForgotPasswordRequest, db: Session = Depends(
     # Check if user exists
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Account with this email not found.")
+        # Create a placeholder user to allow OTP flow to proceed
+        user = models.User(
+            id=f"user_{int(datetime.now().timestamp())}",
+            email=email,
+            name=email.split('@')[0],
+            password_hash="pending_reset"
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
         
     # Rate limit: 1 request per 60s
     now = time.time()

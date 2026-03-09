@@ -6,7 +6,7 @@ from app.core.database import Base
 class User(Base):
     __tablename__ = "users"
     
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     name = Column(String, nullable=False)
@@ -23,7 +23,7 @@ class GameSession(Base):
     __tablename__ = "game_sessions"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
     started_at = Column(DateTime, default=datetime.utcnow)
     completed_at = Column(DateTime)
     games_played = Column(Integer, default=0)
@@ -55,7 +55,7 @@ class StressReport(Base):
     __tablename__ = "stress_reports"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
     session_id = Column(Integer, ForeignKey("game_sessions.id"), nullable=False)
     overall_stress = Column(Float)
     stress_level = Column(String)  # Low, Medium, High

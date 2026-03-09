@@ -11,10 +11,19 @@ from dotenv import load_dotenv
 
 # Load environment variables
 current_file = os.path.abspath(__file__)
+# apps/api/app/main.py -> apps/api/app -> apps/api -> apps -> root
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_file))))
-env_path = os.path.join(project_root, 'apps', 'web', '.env.local')
-if os.path.exists(env_path):
-    load_dotenv(env_path)
+
+# Possible paths for env file
+env_paths = [
+    os.path.join(project_root, '.env.local'),
+    os.path.join(project_root, '.env'),
+    os.path.join(os.path.dirname(os.path.dirname(current_file)), '.env') # apps/api/.env
+]
+
+for path in env_paths:
+    if os.path.exists(path):
+        load_dotenv(path)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

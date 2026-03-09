@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
+import { API_BASE_URL } from '@/lib/api-config'
 
 // Pages where "Log In" and "Get Started" are always shown
 const PUBLIC_AUTH_PAGES = new Set(['/', '/about', '/terms'])
@@ -115,10 +116,10 @@ export function Navbar() {
             if (!userId) return
 
             const [sessRes, repRes] = await Promise.allSettled([
-                fetch(`http://127.0.0.1:8000/api/v1/stress/user/${userId}/history`, {
+                fetch(`${API_BASE_URL}/api/v1/stress/user/${userId}/history`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
-                fetch(`http://127.0.0.1:8000/api/v1/reports/user/${userId}/reports`, {
+                fetch(`${API_BASE_URL}/api/v1/reports/user/${userId}/reports`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
             ])

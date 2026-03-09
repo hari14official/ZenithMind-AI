@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react'
 
+import { WS_BASE_URL } from '@/lib/api-config'
+
 const FaceTracking = forwardRef(({ onStressUpdate }, ref) => {
     const videoRef = useRef(null)
     const canvasRef = useRef(null)
@@ -133,7 +135,7 @@ const FaceTracking = forwardRef(({ onStressUpdate }, ref) => {
             }
 
             // Connect to WebSocket
-            wsRef.current = new WebSocket('ws://127.0.0.1:8000/ws/analysis')
+            wsRef.current = new WebSocket(`${WS_BASE_URL}/ws/analysis`)
 
             wsRef.current.onopen = () => {
                 console.log('WebSocket connected')

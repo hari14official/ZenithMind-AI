@@ -1,0 +1,6 @@
+﻿('user_1773078588', 'test@example.com', 'pending_reset')
+('user_1773078730', 'hari14official@gmail.com', 'pending_reset')
+('yb86T84EJFTDyvVcnYAfqcfVSL03', 'firebase-user@zenithmind.ai', 'firebase-only')
+('user_1773151227', 'haridonsines2005@gmail.com', 'pending_reset')
+('user_1773152888', 'dajas45958@devlug.com', '$2b$12$/XmrEh1ry92Coad4UZLVDeU3oQhAbn1sqnq7Om7dY1AdIvwcfqgOu')
+('user_1773153403', 'adhivash601@gmail.com', '$2b$12$OlfCCFjpKRt3p4AhaNrxH.fbNineOBTaxyl1b4jM3IqyB3PqdiF52')

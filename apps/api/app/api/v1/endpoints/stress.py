@@ -24,13 +24,25 @@ def start_session(
         # Create minimal user record to satisfy foreign key
         db_user = models.User(
             id=session_data.user_id,
-            email="firebase-user@zenithmind.ai", # Fallback, we don't have email here unless we add it to schema
-            name="Anonymous",
+            email=session_data.user_email or "firebase-user@zenithmind.ai",
+            name=session_data.user_name or "Anonymous",
             password_hash="firebase-only"
         )
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
+    else:
+        # Update existing anonymous user if we now have their real data
+        updated = False
+        if session_data.user_email and db_user.email == "firebase-user@zenithmind.ai":
+            db_user.email = session_data.user_email
+            updated = True
+        if session_data.user_name and db_user.name == "Anonymous":
+            db_user.name = session_data.user_name
+            updated = True
+        if updated:
+            db.commit()
+            db.refresh(db_user)
     
     session = models.GameSession(
         user_id=session_data.user_id,
@@ -119,7 +131,7 @@ def get_session_data(session_id: int, db: Session = Depends(get_db)):
     }
 
 @router.get("/user/{user_id}/history")
-def get_user_stress_history(user_id: int, db: Session = Depends(get_db)):
+def get_user_stress_history(user_id: str, db: Session = Depends(get_db)):
     """Get stress history for a user"""
     sessions = db.query(models.GameSession).filter(
         models.GameSession.user_id == user_id

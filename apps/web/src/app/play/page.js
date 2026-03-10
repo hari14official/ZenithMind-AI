@@ -81,7 +81,12 @@ export default function PlayPage() {
             const response = await fetch(`${API_BASE_URL}/api/v1/stress/session/start`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: user.id, baseline_stress: 50 })
+                body: JSON.stringify({
+                    user_id: user.id,
+                    baseline_stress: 50,
+                    user_email: user.email,
+                    user_name: user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'Anonymous')
+                })
             })
 
             if (!response.ok) throw new Error('Failed to create session')

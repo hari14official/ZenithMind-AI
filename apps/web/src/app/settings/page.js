@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
+import { auth, db } from '@/lib/firebase'
+import { doc, updateDoc, getDoc } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
 
 export default function SettingsPage() {
     const [notifications, setNotifications] = useState(true)
@@ -20,23 +23,39 @@ export default function SettingsPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     useEffect(() => {
-        const userData = localStorage.getItem('user')
-        if (userData) {
-            try { setUser(JSON.parse(userData)) } catch { }
-        }
-        const savedAbout = localStorage.getItem('user_about') || ''
-        setAbout(savedAbout)
+        const unsubscribe = onAuthStateChanged(auth, async (activeUser) => {
+            if (activeUser) {
+                setUser(activeUser)
+                // Fetch from Firestore
+                try {
+                    const docSnap = await getDoc(doc(db, "users", activeUser.uid))
+                    if (docSnap.exists()) {
+                        const data = docSnap.data()
+                        setAbout(data.about || '')
+                        setGender(data.gender || 'Prefer not to say')
+                        setAge(data.age || '')
+                        // DOB is not always in Firestore, fallback to local if needed
+                        setDob(data.dob || localStorage.getItem('user_dob') || '')
+                    }
+                } catch (err) {
+                    console.error("Firestore retrieval error:", err)
+                }
+            } else {
+                // Not logged in
+                const userData = localStorage.getItem('user')
+                if (userData) {
+                    try { setUser(JSON.parse(userData)) } catch { }
+                }
+            }
+        })
+
         const savedAvatar = localStorage.getItem('user_avatar')
         setAvatar(savedAvatar)
-        const savedGender = localStorage.getItem('user_gender') || 'Prefer not to say'
-        setGender(savedGender)
-        const savedAge = localStorage.getItem('user_age') || ''
-        setAge(savedAge)
-        const savedDob = localStorage.getItem('user_dob') || ''
-        setDob(savedDob)
         const savedDark = localStorage.getItem('dark_mode') === 'true'
         setDarkMode(savedDark)
         if (savedDark) document.documentElement.classList.add('dark')
+
+        return () => unsubscribe()
     }, [])
 
     const toggleDarkMode = () => {
@@ -50,7 +69,24 @@ export default function SettingsPage() {
         }
     }
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        const activeUser = auth.currentUser || user
+        if (activeUser?.uid || activeUser?.id) {
+            const uid = activeUser.uid || activeUser.id
+            try {
+                await updateDoc(doc(db, "users", uid), {
+                    gender: gender,
+                    age: age,
+                    about: about,
+                    dob: dob,
+                    updatedAt: new Date().toISOString()
+                })
+                console.log("Firestore updated successfully")
+            } catch (err) {
+                console.error("Firestore update failed:", err)
+            }
+        }
+
         localStorage.setItem('user_about', about)
         localStorage.setItem('user_gender', gender)
         localStorage.setItem('user_age', age)
@@ -58,7 +94,6 @@ export default function SettingsPage() {
         if (avatar) localStorage.setItem('user_avatar', avatar)
         setSaved(true)
         setTimeout(() => setSaved(false), 2000)
-        globalThis.location.reload()
     }
 
     const handleAvatarChange = (e) => {

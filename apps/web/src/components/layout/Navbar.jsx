@@ -5,8 +5,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { API_BASE_URL } from '@/lib/api-config'
 
-// Pages where "Log In" and "Get Started" are always shown
-const PUBLIC_AUTH_PAGES = new Set(['/', '/about', '/terms'])
+// Pages where "Log In" and "Get Started" are shown when logged out
+const PUBLIC_AUTH_PAGES = new Set(['/', '/about', '/terms', '/benefits'])
 
 // Pages where NOTHING extra should appear in the navbar (clean)
 const CLEAN_PAGES = new Set(['/login', '/register'])
@@ -93,13 +93,13 @@ export function Navbar() {
         ? pathname.slice(0, -1)
         : pathname
 
-    // Home & About ALWAYS show Log In + Get Started
-    const showAuthButtons = PUBLIC_AUTH_PAGES.has(normalizedPath)
+    // Show Auth Buttons if the user is NOT logged in AND it's a public page
+    const showAuthButtons = !isLoggedIn && PUBLIC_AUTH_PAGES.has(normalizedPath)
 
-    // Notifications + Help only on non-public, non-login/register pages when logged in
-    const showLoggedInButtons = isLoggedIn && !PUBLIC_AUTH_PAGES.has(normalizedPath) && !CLEAN_PAGES.has(normalizedPath)
+    // Notifications + Help when logged in, on any page except clean pages (login/register)
+    const showLoggedInButtons = isLoggedIn && !CLEAN_PAGES.has(normalizedPath)
 
-    // Features link: shows when logged in, hidden on login/register pages
+    // Dashboard link: shows when logged in, hidden on login/register pages
     const showFeaturesLink = isLoggedIn && !CLEAN_PAGES.has(normalizedPath)
 
     // Brand Link Check: always show on all pages
@@ -294,10 +294,15 @@ export function Navbar() {
                         )}
                     </div>
 
-                    {/* Features — only when logged in → goes to Dashboard */}
+                    {/* Benefits Link */}
+                    <Link href="/benefits" className="text-foreground/70 hover:text-primary transition-colors">
+                        Benefits
+                    </Link>
+
+                    {/* Dashboard — only when logged in */}
                     {showFeaturesLink && (
                         <Link href="/dashboard" className="text-foreground/70 hover:text-primary transition-colors">
-                            Features
+                            Dashboard
                         </Link>
                     )}
 

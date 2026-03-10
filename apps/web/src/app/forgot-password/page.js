@@ -21,6 +21,8 @@ export default function ForgotPasswordPage() {
     const [error, setError] = useState('')
     const [countdown, setCountdown] = useState(0) // Timer for Resend OTP
     const [resetToken, setResetToken] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     // Auto-countdown logic
     useEffect(() => {
@@ -256,25 +258,51 @@ export default function ForgotPasswordPage() {
                                 <div className="space-y-3">
                                     <div className="space-y-1">
                                         <label className="text-sm font-bold text-slate-600 ml-1">New Secure Password</label>
-                                        <Input
-                                            type="password"
-                                            placeholder="••••••••"
-                                            className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all text-base shadow-sm"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            required
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="••••••••"
+                                                className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all text-base shadow-sm pr-10"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                                            >
+                                                {showPassword ? (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                                ) : (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-sm font-bold text-slate-600 ml-1">Confirm Identity</label>
-                                        <Input
-                                            type="password"
-                                            placeholder="••••••••"
-                                            className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all text-base shadow-sm"
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            required
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                type={showConfirmPassword ? "text" : "password"}
+                                                placeholder="••••••••"
+                                                className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all text-base shadow-sm pr-10"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors"
+                                            >
+                                                {showConfirmPassword ? (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                                ) : (
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 {error && <p className="text-xs text-red-500 font-semibold bg-red-50 p-3 rounded-xl border border-red-100 flex items-center gap-2">⚠️ {error}</p>}

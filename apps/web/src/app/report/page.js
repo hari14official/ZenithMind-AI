@@ -32,7 +32,10 @@ function ReportContent() {
                     const user = JSON.parse(userData)
                     fetch(`${API_BASE_URL}/api/v1/stress/user/${user.id}/history`)
                         .then(r => r.json())
-                        .then(data => { setHistoryList(data); setHistoryLoading(false) })
+                        .then(data => {
+                            setHistoryList(Array.isArray(data) ? data : []);
+                            setHistoryLoading(false)
+                        })
                         .catch(() => setHistoryLoading(false))
                 } catch { setHistoryLoading(false) }
             } else {
@@ -87,9 +90,17 @@ function ReportContent() {
 
     const downloadPDF = async () => {
         try {
-            const response = await fetch(
-                `${API_BASE_URL}/api/v1/reports/${report.id}/pdf`
-            )
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            const userEmail = userData.email || '';
+            const userName = userData.name || userData.displayName || (userData.email ? userData.email.split('@')[0] : '');
+
+            const params = new URLSearchParams();
+            if (userEmail) params.append('email', userEmail);
+            if (userName) params.append('name', userName);
+
+            const urlWithParams = `${API_BASE_URL}/api/v1/reports/${report.id}/pdf?${params.toString()}`;
+
+            const response = await fetch(urlWithParams)
             const blob = await response.blob()
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement('a')
@@ -238,13 +249,13 @@ function ReportContent() {
                     </div>
                     <h1 className="text-4xl font-black tracking-tight text-white">Stress Analysis Report</h1>
                     <p className="text-slate-400 font-medium text-lg">
-                        Session #{sessionId} • {new Date(report.created_at).toLocaleDateString('en-US', {
+                        Session #{sessionId} • {report.created_at ? new Date(report.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit'
-                        })}
+                        }) : 'Date unavailable'}
                     </p>
                 </div>
                 <div className="flex gap-3">

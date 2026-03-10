@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from app.core.database import get_db
 from app import models, schemas
@@ -119,7 +119,12 @@ def get_report_by_session(session_id: int, db: Session = Depends(get_db)):
     return report
 
 @router.get("/{report_id}/pdf")
-def download_pdf_report(report_id: int, db: Session = Depends(get_db)):
+def download_pdf_report(
+    report_id: int, 
+    email: Optional[str] = None,
+    name: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
     """Download report as PDF"""
     report = db.query(models.StressReport).filter(models.StressReport.id == report_id).first()
     if not report:
@@ -130,8 +135,8 @@ def download_pdf_report(report_id: int, db: Session = Depends(get_db)):
     session = db.query(models.GameSession).filter(models.GameSession.id == report.session_id).first()
     
     user_data = {
-        'name': user.name,
-        'email': user.email,
+        'name': name or user.name,
+        'email': email or user.email,
         'work_type': user.work_type,
         'working_hours': user.working_hours,
         'mobile_usage': user.mobile_usage
@@ -165,7 +170,7 @@ def download_pdf_report(report_id: int, db: Session = Depends(get_db)):
     )
 
 @router.get("/user/{user_id}/reports")
-def get_user_reports(user_id: int, db: Session = Depends(get_db)):
+def get_user_reports(user_id: str, db: Session = Depends(get_db)):
     """Get all reports for a user"""
     reports = db.query(models.StressReport).filter(
         models.StressReport.user_id == user_id

@@ -34,6 +34,8 @@ class Token(BaseModel):
 class GameSessionCreate(BaseModel):
     user_id: str
     baseline_stress: Optional[float] = None
+    user_email: Optional[str] = None
+    user_name: Optional[str] = None
 
 class GameDataCreate(BaseModel):
     game_name: str

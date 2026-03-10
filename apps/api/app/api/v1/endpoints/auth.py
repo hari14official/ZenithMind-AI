@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import datetime
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token
 from app import models, schemas
@@ -13,6 +14,24 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     # Check if user exists
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
+        # If it's a placeholder from the OTP flow, allow updating it
+        if db_user.password_hash == "pending_reset":
+            db_user.name = user.name
+            db_user.password_hash = get_password_hash(user.password)
+            db_user.work_type = user.work_type
+            db_user.working_hours = user.working_hours
+            db_user.mobile_usage = user.mobile_usage
+            db_user.health_info = user.health_info
+            db.commit()
+            db.refresh(db_user)
+            
+            access_token = create_access_token(data={"sub": user.email, "user_id": db_user.id})
+            return {
+                "access_token": access_token,
+                "token_type": "bearer",
+                "user": db_user
+            }
+        
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"

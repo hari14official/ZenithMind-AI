@@ -14,7 +14,7 @@ currently being supported with security updates.
 
 We take the security of our software very seriously. If you find a vulnerability, please let us know immediately.
 
-To report a vulnerability, please reach out via https://github.com/rdxkeerthi with a description of the issue, the steps you took to create the issue, affected versions, and any other relevant information.
+To report a vulnerability, please reach out via https://github.com/hari14official with a description of the issue, the steps you took to create the issue, affected versions, and any other relevant information.
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 

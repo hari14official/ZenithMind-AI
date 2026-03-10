@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { API_BASE_URL } from '@/lib/api-config'
 
@@ -20,35 +20,39 @@ const SERVICES = [
 ]
 
 // Build real-time notifications from stress session data
-function buildNotifications(sessions, reports) {
+function getSessionNotifs(sessions) {
+    if (!sessions || sessions.length === 0) return []
     const notifs = []
+    const latest = sessions[0]
+    const avg = Math.round(latest.avg_stress ?? 0)
+    let level = '🔴 High'
+    if (avg < 40) level = '🟢 Calm'
+    else if (avg < 70) level = '🟡 Moderate'
 
-    if (sessions && sessions.length > 0) {
-        const latest = sessions[0]
-        const avg = Math.round(latest.avg_stress ?? 0)
-        const level = avg < 40 ? '🟢 Calm' : avg < 70 ? '🟡 Moderate' : '🔴 High'
-        notifs.push({
-            id: `sess-${latest.id}`,
-            icon: '🧠',
-            text: `Last session: stress score ${avg}/100 — ${level}`,
-            time: latest.created_at
-                ? new Date(latest.created_at).toLocaleString()
-                : 'Recent',
-        })
+    notifs.push({
+        id: `sess-${latest.id}`,
+        icon: '🧠',
+        text: `Last session: stress score ${avg}/100 — ${level}`,
+        time: latest.created_at ? new Date(latest.created_at).toLocaleString() : 'Recent',
+    })
 
-        if (sessions.length >= 2) {
-            const prev = sessions[1]
-            const diff = Math.round((latest.avg_stress ?? 0) - (prev.avg_stress ?? 0))
-            if (Math.abs(diff) >= 5) {
-                notifs.push({
-                    id: `trend-${latest.id}`,
-                    icon: diff < 0 ? '📉' : '📈',
-                    text: `Stress ${diff < 0 ? 'decreased' : 'increased'} by ${Math.abs(diff)} pts since your last session`,
-                    time: 'Trend alert',
-                })
-            }
+    if (sessions.length >= 2) {
+        const prev = sessions[1]
+        const diff = Math.round((latest.avg_stress ?? 0) - (prev.avg_stress ?? 0))
+        if (Math.abs(diff) >= 5) {
+            notifs.push({
+                id: `trend-${latest.id}`,
+                icon: diff < 0 ? '📉' : '📈',
+                text: `Stress ${diff < 0 ? 'decreased' : 'increased'} by ${Math.abs(diff)} pts since your last session`,
+                time: 'Trend alert',
+            })
         }
     }
+    return notifs
+}
+
+function buildNotifications(sessions, reports) {
+    const notifs = getSessionNotifs(sessions)
 
     if (reports && reports.reports && reports.reports.length > 0) {
         const r = reports.reports[0]
@@ -73,9 +77,7 @@ function buildNotifications(sessions, reports) {
 
 export function Navbar() {
     const pathname = usePathname()
-    const router = useRouter()
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [user, setUser] = useState(null)
     const [showServices, setShowServices] = useState(false)
     const [showNotifications, setShowNotifications] = useState(false)
     const [notifications, setNotifications] = useState([
@@ -150,7 +152,7 @@ export function Navbar() {
         const loggedIn = !!token
         setIsLoggedIn(loggedIn)
         if (userData) {
-            try { setUser(JSON.parse(userData)) } catch { }
+            // Unused parsing of user removed
         }
 
         if (loggedIn) {
@@ -171,8 +173,8 @@ export function Navbar() {
             const notif = e.detail;
             setNotifications(prev => [notif, ...prev]);
         }
-        window.addEventListener('new-notification', handleNewNotification);
-        return () => window.removeEventListener('new-notification', handleNewNotification);
+        globalThis.addEventListener('new-notification', handleNewNotification);
+        return () => globalThis.removeEventListener('new-notification', handleNewNotification);
     }, [])
 
     // Mark all as read
@@ -421,7 +423,7 @@ export function Navbar() {
                                     }
                                     localStorage.removeItem('token');
                                     localStorage.removeItem('user');
-                                    window.location.href = '/login';
+                                    globalThis.location.href = '/login';
                                 }}
                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
                                 title="Log out"

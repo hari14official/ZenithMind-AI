@@ -210,8 +210,8 @@ async def reset_password(req: schemas.ResetPasswordRequest, db: Session = Depend
         decoded = base64.b64decode(req.resetToken).decode()
         token_email, expires = decoded.split(":")
         if token_email.lower() != email or time.time() > float(expires):
-            raise Exception()
-    except:
+            raise ValueError("Token invalid or expired")
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid or expired reset session.")
         
     user = db.query(models.User).filter(models.User.email == email).first()

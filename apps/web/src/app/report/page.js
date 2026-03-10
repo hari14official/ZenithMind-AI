@@ -2,11 +2,10 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
-import AnimatedIcon from '@/components/ui/AnimatedIcon'
 import { API_BASE_URL } from '@/lib/api-config'
 
 function ReportContent() {
@@ -64,7 +63,11 @@ function ReportContent() {
                 { method: 'POST' }
             )
 
-            if (!generateResponse.ok) {
+            if (generateResponse.ok) {
+                const data = await generateResponse.json()
+                console.log('Report generated:', data.overall_stress)
+                setReport(data)
+            } else {
                 // Try to fetch existing report
                 const fetchResponse = await fetch(
                     `${API_BASE_URL}/api/v1/reports/session/${sessionId}/report`
@@ -75,10 +78,6 @@ function ReportContent() {
                 }
 
                 const data = await fetchResponse.json()
-                setReport(data)
-            } else {
-                const data = await generateResponse.json()
-                console.log('Report generated:', data.overall_stress)
                 setReport(data)
             }
         } catch (err) {
@@ -102,14 +101,14 @@ function ReportContent() {
 
             const response = await fetch(urlWithParams)
             const blob = await response.blob()
-            const url = window.URL.createObjectURL(blob)
+            const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
             a.download = `stress_report_${report.id}_${new Date().toISOString().split('T')[0]}.pdf`
             document.body.appendChild(a)
             a.click()
-            window.URL.revokeObjectURL(url)
-            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+            a.remove()
         } catch (error) {
             console.error('Error downloading PDF:', error)
             alert('Failed to download PDF')
@@ -149,65 +148,73 @@ function ReportContent() {
                     <p className="text-slate-400 mt-1">All your past stress assessment sessions.</p>
                 </div>
 
-                {historyLoading ? (
-                    <div className="flex items-center justify-center min-h-[200px]">
-                        <div className="relative w-12 h-12">
-                            <div className="absolute inset-0 bg-indigo-500/20 rounded-full animate-pulse" />
-                            <div className="absolute inset-1.5 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                        </div>
-                    </div>
-                ) : historyList.length === 0 ? (
-                    <div className="text-center py-16 rounded-2xl border border-white/10 bg-white/5">
-                        <div className="text-5xl mb-4">📊</div>
-                        <h3 className="text-xl font-bold text-white mb-2">No Reports Yet</h3>
-                        <p className="text-slate-400 mb-6">Complete a session to generate your first stress report.</p>
-                        <Button onClick={() => router.push('/play')} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                            Start a Session →
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="space-y-3">
-                        {historyList.map(session => {
-                            const badge = getStressBadge(session.avg_stress)
-                            return (
-                                <div
-                                    key={session.id}
-                                    className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-200 group"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 font-black text-sm flex-shrink-0">
-                                            #{String(session.id).slice(-3)}
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-white text-sm">Cognitive Assessment</p>
-                                            <p className="text-xs text-slate-400 mt-0.5">
-                                                {new Date(session.created_at).toLocaleDateString('en-US', {
-                                                    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-                                                    hour: '2-digit', minute: '2-digit'
-                                                })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-center">
-                                            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Stress</p>
-                                            <span className={`px-3 py-1 rounded-lg text-sm font-bold border ${badge.cls}`}>
-                                                {Number(session.avg_stress || 0).toFixed(0)} · {badge.label}
-                                            </span>
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            onClick={() => router.push(`/report?session=${session.id}`)}
-                                            className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            View Report →
-                                        </Button>
-                                    </div>
+                {(() => {
+                    if (historyLoading) {
+                        return (
+                            <div className="flex items-center justify-center min-h-[200px]">
+                                <div className="relative w-12 h-12">
+                                    <div className="absolute inset-0 bg-indigo-500/20 rounded-full animate-pulse" />
+                                    <div className="absolute inset-1.5 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
                                 </div>
-                            )
-                        })}
-                    </div>
-                )}
+                            </div>
+                        )
+                    }
+                    if (historyList.length === 0) {
+                        return (
+                            <div className="text-center py-16 rounded-2xl border border-white/10 bg-white/5">
+                                <div className="text-5xl mb-4">📊</div>
+                                <h3 className="text-xl font-bold text-white mb-2">No Reports Yet</h3>
+                                <p className="text-slate-400 mb-6">Complete a session to generate your first stress report.</p>
+                                <Button onClick={() => router.push('/play')} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                                    Start a Session →
+                                </Button>
+                            </div>
+                        )
+                    }
+                    return (
+                        <div className="space-y-3">
+                            {historyList.map(session => {
+                                const badge = getStressBadge(session.avg_stress)
+                                return (
+                                    <div
+                                        key={session.id}
+                                        className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-200 group"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 font-black text-sm flex-shrink-0">
+                                                #{String(session.id).slice(-3)}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-white text-sm">Cognitive Assessment</p>
+                                                <p className="text-xs text-slate-400 mt-0.5">
+                                                    {new Date(session.created_at).toLocaleDateString('en-US', {
+                                                        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+                                                        hour: '2-digit', minute: '2-digit'
+                                                    })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-center">
+                                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Stress</p>
+                                                <span className={`px-3 py-1 rounded-lg text-sm font-bold border ${badge.cls}`}>
+                                                    {Number(session.avg_stress || 0).toFixed(0)} · {badge.label}
+                                                </span>
+                                            </div>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => router.push(`/report?session=${session.id}`)}
+                                                className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                View Report →
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )
+                })()}
             </div>
         )
     }
@@ -302,8 +309,9 @@ function ReportContent() {
                         <div className="flex flex-col items-center justify-center p-4 bg-white/10 rounded-2xl border border-white/20 shadow-sm text-center">
                             <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Trend</p>
                             <div className="text-3xl font-bold my-2 bg-clip-text text-transparent bg-gradient-to-r from-slate-200 to-slate-400">
-                                {report.stress_trend === 'Increasing' ? '📈 Rising' :
-                                    report.stress_trend === 'Decreasing' ? '📉 Falling' : '➡️ Stable'}
+                                {report.stress_trend === 'Increasing' && '📈 Rising'}
+                                {report.stress_trend === 'Decreasing' && '📉 Falling'}
+                                {report.stress_trend !== 'Increasing' && report.stress_trend !== 'Decreasing' && '➡️ Stable'}
                             </div>
                         </div>
                     </CardContent>
@@ -320,7 +328,7 @@ function ReportContent() {
                     <CardContent>
                         <p className="text-indigo-100 text-lg leading-relaxed font-medium">
                             Based on your facial micro-expressions and reaction times, your stress response appears to be
-                            <span className="text-white font-bold"> {report.stress_level.toLowerCase()}</span>.
+                            {' '}<span className="text-white font-bold">{report.stress_level.toLowerCase()}</span>.
                             {report.stress_level === 'High' ? " Immediate relaxation techniques recommended." : " You are maintaining good cognitive balance."}
                         </p>
                     </CardContent>
@@ -346,8 +354,8 @@ function ReportContent() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/10">
-                                    {sessionData.games.map((game, idx) => (
-                                        <tr key={idx} className="hover:bg-white/5 transition-colors text-slate-300">
+                                    {sessionData.games.map((game) => (
+                                        <tr key={game.game_name} className="hover:bg-white/5 transition-colors text-slate-300">
                                             <td className="p-4 font-bold text-white">{game.game_name}</td>
                                             <td className="p-4 text-slate-400 font-mono">{game.duration.toFixed(1)}s</td>
                                             <td className="p-4 font-bold text-indigo-400">{game.score.toFixed(0)}</td>
@@ -392,6 +400,7 @@ function ReportContent() {
     )
 }
 
+// eslint-disable-next-line react/prop-types
 function RecommendationCard({ title, icon, items, delay }) {
     const getIcon = () => {
         if (icon === 'tree') return '🌳'
@@ -411,8 +420,8 @@ function RecommendationCard({ title, icon, items, delay }) {
             </CardHeader>
             <CardContent>
                 <ul className="space-y-3">
-                    {items.map((item, idx) => (
-                        <li key={idx} className="flex gap-3 items-start p-3 rounded-lg hover:bg-white/5 transition-colors">
+                    {items.map((item) => (
+                        <li key={item} className="flex gap-3 items-start p-3 rounded-lg hover:bg-white/5 transition-colors">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0"></span>
                             <span className="text-slate-400 font-medium text-sm leading-relaxed">{item}</span>
                         </li>

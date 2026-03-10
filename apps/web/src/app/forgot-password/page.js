@@ -64,6 +64,7 @@ export default function ForgotPasswordPage() {
                 setError(data.detail || 'Failed to send OTP verification code')
             }
         } catch (err) {
+            console.error(err)
             setError('Connection error. Please check your internet.')
         } finally {
             setLoading(false)
@@ -101,6 +102,7 @@ export default function ForgotPasswordPage() {
                 setOtp(['', '', '', '', '', ''])
             }
         } catch (err) {
+            console.error(err)
             setError('Verification failed. Server connection error.')
             setCountdown(0)
             setOtp(['', '', '', '', '', ''])
@@ -141,6 +143,7 @@ export default function ForgotPasswordPage() {
                 setError(data.detail || 'Could not reset password')
             }
         } catch (err) {
+            console.error(err)
             setError('Final submission error. Try again.')
         } finally {
             setLoading(false)
@@ -148,7 +151,7 @@ export default function ForgotPasswordPage() {
     }
 
     const handleOtpChange = (element, index) => {
-        if (isNaN(element.value)) return false
+        if (Number.isNaN(Number(element.value))) return false
         const newOtp = [...otp]
         newOtp[index] = element.value
         setOtp(newOtp)
@@ -172,24 +175,29 @@ export default function ForgotPasswordPage() {
                     <CardHeader className="space-y-1">
                         <div className="flex justify-center mb-4">
                             <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary text-2xl font-bold border border-primary/20 shadow-inner">
-                                {step === 1 ? '📧' : step === 2 ? '🔐' : '🔑'}
+                                {step === 1 && '📧'}
+                                {step === 2 && '🔐'}
+                                {step === 3 && '🔑'}
                             </div>
                         </div>
                         <CardTitle className="text-2xl font-black text-center tracking-tight text-slate-800 uppercase">
-                            {step === 1 ? 'Forgot Password' : step === 2 ? 'Verify OTP' : 'Update Security'}
+                            {step === 1 && 'Forgot Password'}
+                            {step === 2 && 'Verify OTP'}
+                            {step === 3 && 'Update Security'}
                         </CardTitle>
                         <CardDescription className="text-center font-medium text-slate-500 px-2 text-sm">
-                            {step === 1 ? 'Enter your registered email for an OTP' :
-                                step === 2 ? `A 6-digit code has been sent to ${email}` :
-                                    'Ensure your new password contains at least 8 characters'}
+                            {step === 1 && 'Enter your registered email for an OTP'}
+                            {step === 2 && `A 6-digit code has been sent to ${email}`}
+                            {step === 3 && 'Ensure your new password contains at least 8 characters'}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-4">
                         {step === 1 && (
                             <form onSubmit={handleSendOTP} className="space-y-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-600 ml-1">Email Address</label>
+                                    <label htmlFor="emailInput" className="text-sm font-bold text-slate-600 ml-1">Email Address</label>
                                     <Input
+                                        id="emailInput"
                                         type="email"
                                         placeholder="user@zenithmind.ai"
                                         className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all text-base shadow-sm"
@@ -216,7 +224,7 @@ export default function ForgotPasswordPage() {
                                     <div className="flex justify-between gap-1.5">
                                         {otp.map((data, index) => (
                                             <input
-                                                key={index}
+                                                key={`otp-input-${index}`}
                                                 type="text"
                                                 maxLength="1"
                                                 className="w-full h-12 text-center text-2xl font-normal border-2 rounded-xl border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none bg-slate-50/50 focus:bg-white shadow-sm"
@@ -257,9 +265,10 @@ export default function ForgotPasswordPage() {
                             <form onSubmit={handleResetPassword} className="space-y-4">
                                 <div className="space-y-3">
                                     <div className="space-y-1">
-                                        <label className="text-sm font-bold text-slate-600 ml-1">New Secure Password</label>
+                                        <label htmlFor="newPasswordInput" className="text-sm font-bold text-slate-600 ml-1">New Secure Password</label>
                                         <div className="relative">
                                             <Input
+                                                id="newPasswordInput"
                                                 type={showPassword ? "text" : "password"}
                                                 placeholder="••••••••"
                                                 className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all text-base shadow-sm pr-10"
@@ -281,9 +290,10 @@ export default function ForgotPasswordPage() {
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-sm font-bold text-slate-600 ml-1">Confirm Identity</label>
+                                        <label htmlFor="confirmPasswordInput" className="text-sm font-bold text-slate-600 ml-1">Confirm Identity</label>
                                         <div className="relative">
                                             <Input
+                                                id="confirmPasswordInput"
                                                 type={showConfirmPassword ? "text" : "password"}
                                                 placeholder="••••••••"
                                                 className="h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white transition-all text-base shadow-sm pr-10"
@@ -327,7 +337,7 @@ export default function ForgotPasswordPage() {
                     <CardFooter className="flex justify-center pb-6">
                         <Link href="/login" className="group flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-primary transition-all">
                             <span className="group-hover:-translate-x-1 transition-transform">←</span>
-                            Back to log in
+                            {' '}Back to log in
                         </Link>
                     </CardFooter>
                 </Card>

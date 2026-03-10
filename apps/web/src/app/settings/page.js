@@ -135,10 +135,11 @@ export default function SettingsPage() {
                     <CardContent className="space-y-6">
                         {/* Profile Picture at Top */}
                         <div className="flex flex-col items-center gap-4 py-4 border-b border-slate-100 dark:border-slate-800">
-                            <div
+                            <button
+                                type="button"
                                 onClick={() => avatar && setShowAvatarPreview(true)}
                                 className={cn(
-                                    "h-32 w-32 rounded-full ring-4 ring-indigo-500/20 bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity",
+                                    "h-32 w-32 rounded-full ring-4 ring-indigo-500/20 bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity outline-none",
                                     !avatar && "border-2 border-dashed border-slate-300"
                                 )}
                             >
@@ -147,10 +148,11 @@ export default function SettingsPage() {
                                 ) : (
                                     <span className="text-4xl">👤</span>
                                 )}
-                            </div>
+                            </button>
                             <div className="flex flex-col items-center gap-2">
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Profile Picture</label>
+                                <label htmlFor="avatar-upload" className="text-sm font-bold text-slate-700 dark:text-slate-300">Profile Picture</label>
                                 <input
+                                    id="avatar-upload"
                                     type="file"
                                     accept="image/*"
                                     onChange={handleAvatarChange}
@@ -163,8 +165,10 @@ export default function SettingsPage() {
                         {/* Full-Size Preview Modal */}
                         {showAvatarPreview && (
                             <div
+                                role="presentation"
                                 className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300"
                                 onClick={() => setShowAvatarPreview(false)}
+                                onKeyDown={(e) => e.key === 'Escape' && setShowAvatarPreview(false)}
                             >
                                 <div className="relative max-w-lg w-full aspect-square bg-white rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                                     <img src={avatar} alt="Large Avatar" className="w-full h-full object-cover" />
@@ -189,8 +193,9 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Gender</label>
+                                <label htmlFor="gender" className="text-sm font-medium">Gender</label>
                                 <select
+                                    id="gender"
                                     value={gender}
                                     onChange={(e) => setGender(e.target.value)}
                                     className="w-full h-10 px-3 py-2 text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-shadow outline-none"
@@ -231,8 +236,9 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Email Address</label>
+                            <label htmlFor="email" className="text-sm font-medium">Email Address</label>
                             <Input
+                                id="email"
                                 type="email"
                                 value={user?.email || ''}
                                 disabled
@@ -242,8 +248,9 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">About</label>
+                            <label htmlFor="about" className="text-sm font-medium">About</label>
                             <textarea
+                                id="about"
                                 className="w-full min-h-[100px] px-3 py-2 text-sm rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none transition-shadow outline-none"
                                 placeholder="Write something about yourself..."
                                 value={about}
@@ -273,6 +280,10 @@ export default function SettingsPage() {
                                 <p className="text-sm text-muted-foreground">Receive weekly summary reports.</p>
                             </div>
                             <div
+                                role="switch"
+                                aria-checked={notifications}
+                                tabIndex={0}
+                                onKeyDown={(e) => e.key === 'Enter' && setNotifications(v => !v)}
                                 className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors duration-300 ${notifications ? 'bg-primary' : 'bg-slate-200'}`}
                                 onClick={() => setNotifications(v => !v)}
                             >
@@ -289,6 +300,10 @@ export default function SettingsPage() {
                                 </p>
                             </div>
                             <div
+                                role="switch"
+                                aria-checked={darkMode}
+                                tabIndex={0}
+                                onKeyDown={(e) => e.key === 'Enter' && toggleDarkMode()}
                                 className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors duration-300 ${darkMode ? 'bg-indigo-600' : 'bg-slate-200'}`}
                                 onClick={toggleDarkMode}
                             >
@@ -350,6 +365,6 @@ export default function SettingsPage() {
                     </div>
                 )}
             </div>
-        </DashboardLayout>
+        </DashboardLayout >
     )
 }

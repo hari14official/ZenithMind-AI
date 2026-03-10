@@ -9,6 +9,8 @@ import json
 
 router = APIRouter(prefix="/api/v1/stress", tags=["stress"])
 
+SESSION_NOT_FOUND_MSG = "Session not found"
+
 @router.post("/session/start")
 def start_session(
     session_data: schemas.GameSessionCreate,
@@ -64,7 +66,7 @@ def save_game_data(
     """Save game data for a session"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise HTTPException(status_code=404, detail=SESSION_NOT_FOUND_MSG)
     
     game = models.GameData(
         session_id=session_id,
@@ -91,7 +93,7 @@ def complete_session(session_id: int, db: Session = Depends(get_db)):
     """Mark session as complete"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise HTTPException(status_code=404, detail=SESSION_NOT_FOUND_MSG)
     
     session.completed_at = datetime.now(timezone.utc)
     db.commit()
@@ -103,7 +105,7 @@ def get_session_data(session_id: int, db: Session = Depends(get_db)):
     """Get all data for a session"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise HTTPException(status_code=404, detail=SESSION_NOT_FOUND_MSG)
     
     games = db.query(models.GameData).filter(models.GameData.session_id == session_id).all()
     
@@ -156,7 +158,7 @@ def get_session_details(session_id: int, db: Session = Depends(get_db)):
     """Get detailed session information including all games"""
     session = db.query(models.GameSession).filter(models.GameSession.id == session_id).first()
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise HTTPException(status_code=404, detail=SESSION_NOT_FOUND_MSG)
     
     games = db.query(models.GameData).filter(
         models.GameData.session_id == session_id

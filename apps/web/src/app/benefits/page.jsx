@@ -96,7 +96,7 @@ export default function BenefitsPage() {
                             Benefits of <span className="text-primary">ZenithMind-AI</span>
                         </h1>
                         <p className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                            Discover the scientifically proven benefits of regular meditation practice and how it can<br />transform your life.
+                            Discover the scientifically proven benefits of regular meditation practice and how it can transform your life.
                         </p>
                     </div>
                 </section>
@@ -149,6 +149,6 @@ export default function BenefitsPage() {
                 </section>
             </main>
             <Footer />
-        </div >
+        </div>
     )
 }

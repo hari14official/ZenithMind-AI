@@ -138,6 +138,7 @@ export default function AboutPage() {
             const data = await res.json()
             setCustomAnswer(data.answer || "I'm not sure, please try again.")
         } catch (error) {
+            console.error(error)
             setCustomAnswer("Error: Could not reach the AI service.")
         } finally {
             setIsLoading(false)
@@ -228,7 +229,7 @@ export default function AboutPage() {
                                         <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{step.description}</p>
                                         <ul className="space-y-2">
                                             {step.details.map((d, i) => (
-                                                <li key={i} className="flex items-start gap-2 text-sm">
+                                                <li key={d} className="flex items-start gap-2 text-sm">
                                                     <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center">
                                                         {i + 1}
                                                     </span>
@@ -276,7 +277,7 @@ export default function AboutPage() {
                     <h2 className="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
                     <div className="space-y-3">
                         {faqs.map((faq, idx) => (
-                            <div key={idx} className="rounded-xl border bg-background shadow-sm overflow-hidden">
+                            <div key={faq.q} className="rounded-xl border bg-background shadow-sm overflow-hidden">
                                 <button
                                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                                     className="w-full flex items-center justify-between p-5 text-left font-semibold hover:bg-muted/50 transition-colors"

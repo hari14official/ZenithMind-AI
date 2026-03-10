@@ -168,7 +168,7 @@ export default function PlayPage() {
         setCurrentStress(stressScore)
         setStressData(prev => {
             const newData = [...prev, stressScore]
-            if (newData.length > 30) return newData.slice(newData.length - 30)
+            if (newData.length > 30) return newData.slice(-30)
             return newData
         })
     }
@@ -284,13 +284,14 @@ export default function PlayPage() {
                     </div>
                     <div className="flex items-center gap-4 bg-white/5 p-2 rounded-xl border border-white/5">
                         <div className="flex gap-2">
-                            {selectedGames.map((_, i) => (
+                            {selectedGames.map((game, i) => (
                                 <div
-                                    key={i}
+                                    key={game.id || i}
                                     className={cn(
                                         "w-3 h-3 rounded-full transition-all duration-300",
-                                        i === currentGameIndex ? "bg-indigo-500 scale-125 shadow-glow" :
-                                            i < currentGameIndex ? "bg-emerald-500" : "bg-white/20"
+                                        i === currentGameIndex && "bg-indigo-500 scale-125 shadow-glow",
+                                        i < currentGameIndex && "bg-emerald-500",
+                                        i > currentGameIndex && "bg-white/20"
                                     )}
                                 />
                             ))}
@@ -346,7 +347,7 @@ export default function PlayPage() {
                     <CardHeader className="p-4 bg-black/60 backdrop-blur-md border-b border-white/10 flex flex-row justify-between items-center absolute top-0 left-0 right-0 z-10">
                         <span className="text-xs font-bold text-white/80 uppercase tracking-widest flex items-center gap-2">
                             <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                            Live Bio-Metrics
+                            {' '}Live Bio-Metrics
                         </span>
                     </CardHeader>
                     <div className="aspect-[4/3] bg-black relative">
@@ -361,9 +362,10 @@ export default function PlayPage() {
                             <span className="uppercase tracking-wider">Stress Index</span>
                             <span className={cn(
                                 "text-3xl font-black transition-colors duration-500",
-                                !currentStress ? "text-slate-600" :
-                                    currentStress < 40 ? "text-emerald-400" :
-                                        currentStress < 70 ? "text-amber-400" : "text-rose-500"
+                                currentStress === null && "text-slate-600",
+                                currentStress !== null && currentStress < 40 && "text-emerald-400",
+                                currentStress !== null && currentStress >= 40 && currentStress < 70 && "text-amber-400",
+                                currentStress !== null && currentStress >= 70 && "text-rose-500"
                             )}>
                                 {currentStress ? Math.round(currentStress) : '--'}
                             </span>

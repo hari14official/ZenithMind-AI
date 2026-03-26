@@ -82,6 +82,7 @@ export function DashboardLayout({ children }) {
                             <NavLink href="/play" icon="🎮">Start Session</NavLink>
                             <NavLink href="/activity" icon="🧘">Activity</NavLink>
                             <NavLink href="/report" icon="📄">Reports</NavLink>
+                            {user?.isAdmin && <NavLink href="/admin-dashboard" icon="🛡️">Admin Dashboard</NavLink>}
                             <NavLink href="/settings" icon="⚙️">Settings</NavLink>
                         </nav>
 

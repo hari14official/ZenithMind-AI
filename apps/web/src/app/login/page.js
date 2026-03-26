@@ -229,11 +229,17 @@ export default function LoginPage() {
                         )}
                     </CardContent>
                     {!isVerificationSent && (
-                        <CardFooter className="flex justify-center">
+                        <CardFooter className="flex flex-col gap-2 justify-center">
                             <p className="text-sm text-muted-foreground">
                                 Don&apos;t have an account?{' '}
                                 <Link href="/register" className="text-primary hover:underline">
                                     Sign up
+                                </Link>
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                Are you an administrator?{' '}
+                                <Link href="/admin-login" className="text-primary hover:underline font-bold">
+                                    Admin Login
                                 </Link>
                             </p>
                         </CardFooter>

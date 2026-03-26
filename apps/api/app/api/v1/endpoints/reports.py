@@ -186,3 +186,28 @@ def get_user_reports(user_id: str, db: Session = Depends(get_db)):
         }
         for r in reports
     ]}
+
+@router.get("/admin/all")
+def get_all_reports_for_admin(db: Session = Depends(get_db)):
+    """Get all reports with user information for admin dashboard"""
+    # Use inner join to get user data with reports
+    reports = db.query(
+        models.StressReport, models.User
+    ).join(
+        models.User, models.StressReport.user_id == models.User.id
+    ).order_by(models.StressReport.created_at.desc()).all()
+    
+    return [
+        {
+            "id": r.StressReport.id,
+            "session_id": r.StressReport.session_id,
+            "user_id": r.User.id,
+            "user_name": r.User.name,
+            "user_email": r.User.email,
+            "overall_stress": r.StressReport.overall_stress,
+            "stress_level": r.StressReport.stress_level,
+            "stress_trend": r.StressReport.stress_trend,
+            "created_at": r.StressReport.created_at,
+        }
+        for r in reports
+    ]
